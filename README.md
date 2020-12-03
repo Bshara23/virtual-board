@@ -76,8 +76,8 @@ todo
 ## ✍️ Authors <a name = "authors"></a>
 
 - [@bshara23](https://github.com/bshara23)
-- [@ahmad](https://github.com/bshara23)
-- [@ayman](https://github.com/bshara23)
+- [@ahmad-masalha](https://github.com/ahmad-masalha)
+- [@aimanouda2309](https://github.com/aimanouda2309)
 
 ## 🎉 Acknowledgments <a name = "acknowledgments"></a>
 
