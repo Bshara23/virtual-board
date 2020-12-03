@@ -39,8 +39,6 @@ todo
 
 ## 🚀 Future Scope <a name = "future_scope"></a>
 
-Here's a list of features that has or has not been implemented yet:
-
 
 - [ ] Multiplayer for teacher and students
 
