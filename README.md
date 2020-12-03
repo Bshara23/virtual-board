@@ -42,7 +42,7 @@ todo
 Here's a list of features that has or has not been implemented yet:
 
 
-- [x] Multiplayer for teacher and students
+- [ ] Multiplayer for teacher and students
 
 
 
