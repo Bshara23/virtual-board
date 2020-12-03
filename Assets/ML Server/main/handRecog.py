@@ -1,24 +1,13 @@
 import cv2
 import mediapipe as mp
 import main.handler as handler
-import socket
-
 mp_drawing = mp.solutions.drawing_utils
 mp_hands = mp.solutions.hands
 mp_ha2nds = mp.solutions.hands.thresholding_calculator_pb2
 
 DrawingSpec = mp.solutions.drawing_utils.DrawingSpec
 
-print('server starts...')
-
-ip_address = '127.0.0.1'
-port_number = 7000
-BUFFER_SIZE = 4096
-
-ss = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-ss.bind((ip_address, port_number))
-ss.listen(1)
-cs, addr = ss.accept()
+# For webcam input:
 
 hands = mp_hands.Hands(
     min_detection_confidence=0.7, min_tracking_confidence=0.5)
@@ -28,15 +17,22 @@ while cap.isOpened():
   if not success:
     break
 
+  print(image.shape)
+  # Flip the image horizontally for a later selfie-view display, and convert
+  # the BGR image to RGB.
   image = cv2.cvtColor(cv2.flip(image, 1), cv2.COLOR_BGR2RGB)
+  # To improve performance, optionally mark the image as not writeable to
+  # pass by reference.
   image.flags.writeable = False
   results = hands.process(image)
 
+
+  # Draw the hand annotations on the image.
   image.flags.writeable = True
 
   image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
   if results.multi_hand_landmarks:
-    landmarksx = handler.hand_handler(results)
+    handler.hand_handler(results)
     image = handler.hand_drawer(image)
     for hand_landmarks in results.multi_hand_landmarks:
       mp_drawing.draw_landmarks(
@@ -44,13 +40,11 @@ while cap.isOpened():
             landmark_drawing_spec = DrawingSpec(color=(192, 255, 44), circle_radius=2),
             connection_drawing_spec = DrawingSpec(color=(219, 179, 17)))
 
-    msg = str(landmarksx)
-    try:
-        cs.send(bytes(msg, "utf-8"))
-    except:
-        cs.send(bytes("no res", "utf-8"))
-  else:
-      cs.send(bytes("no res", "utf-8"))
+
+    for hand in results.multi_handedness:
+      pass
+      #print(hand.classification[0].label, hand.classification[0].index)
+      # print([(x.x ,x.y, x.z) for x in hand_landmarks.landmark][0])
 
   cv2.imshow('MediaPipe Hands', image)
   if cv2.waitKey(1) & 0xFF == 27:
