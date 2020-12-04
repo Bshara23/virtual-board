@@ -1,7 +1,11 @@
-﻿using System.Collections;
+﻿using Newtonsoft.Json;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
+
+
+
 
 public class Hand
 {
@@ -11,19 +15,78 @@ public class Hand
 
     public Hand(string json)
     {
-        this.hg = JsonUtility.FromJson<HG>(json);
+        
+
+        this.hg = JsonConvert.DeserializeObject<HG>(json);
     }
 
+
+    public string print()
+    {
+       
+        var reSerializedJson = JsonConvert.SerializeObject(this.hg);
+        return reSerializedJson;
+    }
+
+    public Hand()
+    {
+        this.hg = new HG();
+        this.hg.left = new XY[21];
+        for (int i = 0; i < 21; i++)
+        {
+            XY xy = new XY();
+            xy.x = 1;
+            xy.y = 2;
+            this.hg.left[i] = xy;
+
+        }
+        this.hg.right = new XY[21];
+        for (int i = 0; i < 21; i++)
+        {
+            XY xy = new XY();
+            xy.x = 1;
+            xy.y = 2;
+            this.hg.right[i] = xy;
+        }
+        var reSerializedJson = JsonConvert.SerializeObject(this.hg);
+        this.hg = JsonConvert.DeserializeObject<HG>(reSerializedJson);
+
+    }
+
+
+    override public string ToString()
+    {
+
+        string str = "";
+        foreach (XY xy in hg.right)
+        {
+            str += xy.x + " : " + xy.y;
+        }
+        foreach (XY xy in hg.left)
+        {
+            str += xy.x + " : " + xy.y;
+        }
+        return str;
+    }
 
     [System.Serializable]
     public struct HG
     {
+        public IList<XY> left { get; set; }
+        public IList<XY> right { get; set; }
+
         public string leftGesture;
         public string rightGesture;
-        public float[,] left;
-        public float[,] right;
+   
     }
 
+  
+    [System.Serializable]
+    public struct XY
+    {
+        public float x;
+        public float y;
+    }
   
     /*
     private void processString(string str)

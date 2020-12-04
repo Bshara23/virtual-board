@@ -66,16 +66,20 @@ def hand_handler(hand):
         rightIndex = 0
 
     js = {}
+    js['left'] = []
+    js['right'] = []
+    js['leftGesture'] = ""
+    js['leftGesture'] = ""
     if isLeft:
-        js['left'] = landmarks[leftIndex]
+        js['left'] = [{"x": pos[0], "y": pos[1]} for pos in landmarks[leftIndex]]
         js['leftGesture'] = gesture_model.predict(landmarks[leftIndex])
 
     if isRight:
-        js['right'] = landmarks[rightIndex]
+        js['right'] = [{"x": pos[0], "y": pos[1]} for pos in landmarks[rightIndex]]
         js['rightGesture'] = gesture_model.predict(landmarks[rightIndex])
 
     js_str = json.dumps(js)
-    print(js_str)
+    # print(js_str)
 
     return js_str
 
