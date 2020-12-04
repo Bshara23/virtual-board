@@ -45,7 +45,7 @@ def record_handler(results):
   recorder_landmarks.append(landmarks)
 
   if len(recorder_landmarks) == 300:
-    save_landmarks("point")
+    save_landmarks("l_pinch")
     isRecording = not isRecording
   print(len(recorder_landmarks))
 

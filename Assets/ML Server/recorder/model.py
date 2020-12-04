@@ -23,18 +23,35 @@ def preprocess(landmarks):
     return np.reshape(landmarks, 42)
 
 filename = '../recorder/gesture_recg.sav'
-loaded_model = pickle.load(open(filename, 'rb'))
+model_right = pickle.load(open(filename, 'rb'))
+filename = '../recorder/gesture_recg_left.sav'
+model_left = pickle.load(open(filename, 'rb'))
 
-mapp = {
+mapp_right = {
     2: "open",
     3: "point",
     1: "pinch",
     0: "closed",
 }
 
+mapp_left = {
+    2: "pinch",
+    3: "point",
+    1: "closed",
+    0: "open",
+}
 
-def predict(arr):
-    hand = preprocess(arr)
-    e = loaded_model.predict([hand])[0]
-    return mapp[e]
+
+
+def predict(arr, isLeft):
+    if isLeft:
+        hand = preprocess(arr)
+        e = model_left.predict([hand])[0]
+        print("left", mapp_left[e])
+        return mapp_left[e]
+    else:
+        hand = preprocess(arr)
+        e = model_right.predict([hand])[0]
+        print("right", mapp_right[e])
+        return mapp_right[e]
 
