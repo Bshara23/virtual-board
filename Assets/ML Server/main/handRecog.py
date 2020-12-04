@@ -17,7 +17,6 @@ while cap.isOpened():
   if not success:
     break
 
-  print(image.shape)
   # Flip the image horizontally for a later selfie-view display, and convert
   # the BGR image to RGB.
   image = cv2.cvtColor(cv2.flip(image, 1), cv2.COLOR_BGR2RGB)
@@ -46,7 +45,7 @@ while cap.isOpened():
       #print(hand.classification[0].label, hand.classification[0].index)
       # print([(x.x ,x.y, x.z) for x in hand_landmarks.landmark][0])
 
-  cv2.imshow('MediaPipe Hands', image)
+  cv2.imshow('Hands', image)
   if cv2.waitKey(1) & 0xFF == 27:
     break
 hands.close()

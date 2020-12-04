@@ -3,6 +3,10 @@ import numpy as np
 import cv2
 import main.drawer as draw
 from collections import deque
+from sklearn import mixture
+import json
+
+import pickle
 left_x = deque(maxlen=2)
 left_x.append([0 ,0])
 right_x = deque(maxlen=2)
@@ -20,6 +24,8 @@ isLeft = False
 leftIndex = 0
 isRight = False
 rightIndex = 0
+
+import recorder.model as gesture_model
 
 
 def hand_handler(hand):
@@ -59,11 +65,19 @@ def hand_handler(hand):
         isLeft = False
         rightIndex = 0
 
+    js = {}
+    if isLeft:
+        js['left'] = landmarks[leftIndex]
+        js['leftGesture'] = gesture_model.predict(landmarks[leftIndex])
 
-    R = 1 if isRight else 0
-    L = 1 if isLeft else 0
-    landmarks.append([R, rightIndex, L, leftIndex])
-    return landmarks
+    if isRight:
+        js['right'] = landmarks[rightIndex]
+        js['rightGesture'] = gesture_model.predict(landmarks[rightIndex])
+
+    js_str = json.dumps(js)
+    print(js_str)
+
+    return js_str
 
 
 def get_point(left, idx):

@@ -3,7 +3,7 @@ import numpy as np
 from timeit import timeit
 
 def centeroid(arr):
-    length = arr.shape[1]
+    length = arr.shape[0]
     sum_x = np.sum(arr[:, 0])
     sum_y = np.sum(arr[:, 1])
     return sum_x/length, sum_y/length

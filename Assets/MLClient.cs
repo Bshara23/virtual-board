@@ -40,11 +40,12 @@ public class MLClient : MonoBehaviour
             int nbytes = s.Receive(buffer);
             string res = Encoding.UTF8.GetString(buffer, 0, nbytes);
             //ArrayList json = JsonUtility.FromJson<string>(res);
-
+            Hand hand = new Hand(res);
+            print(hand.hg.left);
             if (res[0] == '[')
             {
-                Hand hand = new Hand(res);
-
+                
+                /*
                 if (hand.left.Length > 0)
                 {
                     for (int i = 0; i < hand.left.Length; i++)
@@ -66,6 +67,7 @@ public class MLClient : MonoBehaviour
                     }
 
                 }
+                */
             }
             else
             {

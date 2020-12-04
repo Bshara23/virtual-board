@@ -1,25 +1,31 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-
+using UnityEngine;
 
 public class Hand
 {
 
-    public float[,] left { get; set; }
-    public float[,] right { get; set; }
-
-    public bool isLeft { get; set; }
-    public bool isRight { get; set; }
-    public int leftIndex { get; set; }
-    public int rightIndex { get; set; }
+    public HG hg;
 
 
-    public Hand(string str)
+    public Hand(string json)
     {
-        processString(str);
+        this.hg = JsonUtility.FromJson<HG>(json);
     }
 
+
+    [System.Serializable]
+    public struct HG
+    {
+        public string leftGesture;
+        public string rightGesture;
+        public float[,] left;
+        public float[,] right;
+    }
+
+  
+    /*
     private void processString(string str)
     {
         char[] delimiterChars = { ',', ']', '[', ' ' };
@@ -57,4 +63,5 @@ public class Hand
         }
 
     }
+    */
 }
