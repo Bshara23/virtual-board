@@ -11,7 +11,7 @@ public class BoardObjectTrigger : MonoBehaviour
 
     public static int lastObject;
 
-    public Vector3 offset;
+    private Vector3 offset;
     bool isDragging;
     bool isScaling;
     private Vector3 originalPos;
@@ -19,6 +19,16 @@ public class BoardObjectTrigger : MonoBehaviour
     private Vector3 collPos;
     private float orignalDistance;
     private float currentScale;
+    private Vector3 originalScale;
+    [SerializeField]
+    public UnityEvent OnBeginDrag;
+    [SerializeField]
+    public UnityEvent OnEndDrag;
+    [SerializeField]
+    public UnityEvent OnBeginScale;
+    [SerializeField]
+    public UnityEvent OnEndScale;
+    public float scaleFactor = 1f;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -34,6 +44,7 @@ public class BoardObjectTrigger : MonoBehaviour
     void Start()
     {
         originalPos = transform.position;
+        originalScale = transform.localScale;
     }
     private void OnTriggerStay(Collider other)
     {
@@ -70,11 +81,12 @@ public class BoardObjectTrigger : MonoBehaviour
 
     private void BeginScaling()
     {
-      
 
         
         if (!isScaling)
         {
+            OnBeginScale.Invoke();
+
             float x1 = MLClient.hand.hg.left[8].x;
             float y1 = MLClient.hand.hg.left[8].y;
             float x2 = MLClient.hand.hg.right[8].x;
@@ -93,18 +105,32 @@ public class BoardObjectTrigger : MonoBehaviour
         if (isDragging && lastObject == gameObject.GetInstanceID())
         {
             transform.position =  new Vector3(collPos.x, collPos.y, originalPos.z); 
+
+            //transform.position = new Vector3(collPos.x, collPos.y, originalPos.z) + offset
             //transform.position =  offset + new Vector3(collPos.x, collPos.y, originalPos.z); 
         }
 
         else if (isScaling)
         {
-            float x1 = MLClient.hand.hg.left[8].x;
-            float y1 = MLClient.hand.hg.left[8].y;
-            float x2 = MLClient.hand.hg.right[8].x;
-            float y2 = MLClient.hand.hg.right[8].y;
+            if (MLClient.hand.hg.right.Count > 0 && MLClient.hand.hg.left.Count > 0)
+            {
+                float x1 = MLClient.hand.hg.left[8].x;
+                float y1 = MLClient.hand.hg.left[8].y;
+                float x2 = MLClient.hand.hg.right[8].x;
+                float y2 = MLClient.hand.hg.right[8].y;
 
-            currentScale = Vector2.Distance(new Vector2(x1, y1), new Vector2(x2, y2));
-            transform.localScale *= (currentScale - orignalDistance);
+                currentScale = Vector2.Distance(new Vector2(x1, y1), new Vector2(x2, y2));
+
+                //print(currentScale);
+
+                currentScale = Mathf.Clamp(currentScale, 0.1f, 0.3f) * 5f;
+
+                transform.localScale = originalScale * currentScale * scaleFactor;
+                //var toScale = transform.localScale * (currentScale / orignalDistance) * Time.deltaTime * 5f;
+                //transform.localScale = toScale.magnitude < 2 ? transform.localScale : toScale;
+                transform.position = new Vector3(transform.position.x, transform.position.y, originalPos.z);
+
+            }
         }
     }
 
@@ -115,19 +141,25 @@ public class BoardObjectTrigger : MonoBehaviour
 
     private void EndDrag()
     {
+        OnEndDrag.Invoke();
         isDragging = false;
     }
 
     private void EndScaling()
     {
+        OnEndScale.Invoke();
         isScaling = false;
     }
 
     public void BeginDrag()
     {
+        OnBeginDrag.Invoke();
         lastObject = gameObject.GetInstanceID();
 
         isDragging = true;
         //offset = transform.position - new Vector3(collPos.x, collPos.y, originalPos.z);
+        //offset = transform.position - new Vector3(collPos.x, collPos.y, originalPos.z);
+        //offset.z = 0;
+
     }
 }
