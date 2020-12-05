@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -8,19 +9,17 @@ public class BoardObjectTrigger : MonoBehaviour
     #region Private Props
     bool runOnce = false;
 
-    public float ZPos;
-    Vector3 Offset;
-    bool Dragging;
-    #endregion
+    public static int lastObject;
 
-    #region Inspector Variables
-    public Camera MainCamera;
-    [Space]
-    [SerializeField]
-    public UnityEvent OnBeginDrag;
-    [SerializeField]
-    public UnityEvent OnEndDrag;
+    public Vector3 offset;
+    bool isDragging;
+    bool isScaling;
+    private Vector3 originalPos;
     #endregion
+    private Vector3 collPos;
+    private float orignalDistance;
+    private float currentScale;
+
     private void OnTriggerEnter(Collider other)
     {
         if (!runOnce)
@@ -29,12 +28,12 @@ public class BoardObjectTrigger : MonoBehaviour
             print(other.tag);
             runOnce = !runOnce;
         }
-        
     }
+  
+
     void Start()
     {
-        MainCamera = Camera.main;
-        ZPos = MainCamera.WorldToScreenPoint(transform.position).z;
+        originalPos = transform.position;
     }
     private void OnTriggerStay(Collider other)
     {
@@ -43,55 +42,92 @@ public class BoardObjectTrigger : MonoBehaviour
         string rg = MLClient.hand.hg.rightGesture;
         if (rg == "pinch")
         {
-            if (!Dragging)
+            string rl = MLClient.hand.hg.leftGesture;
+            collPos = other.transform.position;
+
+            if (rl == "pinch")
+            {
+                BeginScaling();
+            }
+
+            else if (!isDragging)
+            {
                 BeginDrag();
+                EndScaling();
+            }
+        }
+        else if (rg == "open")
+        {
+            EndDrag();
+            EndScaling();
         }
         else
         {
-            if (rg == "open")
-            {
-                EndDrag();
-            }
+            EndScaling();
+        }
+        
+    }
+
+    private void BeginScaling()
+    {
+      
+
+        
+        if (!isScaling)
+        {
+            float x1 = MLClient.hand.hg.left[8].x;
+            float y1 = MLClient.hand.hg.left[8].y;
+            float x2 = MLClient.hand.hg.right[8].x;
+            float y2 = MLClient.hand.hg.right[8].y;
+
+            currentScale = Vector2.Distance(new Vector2(x1, y1), new Vector2(x2, y2));
+            orignalDistance = currentScale;
+            isScaling = true;
         }
     }
+
     void Update()
     {
-        if (Dragging)
-        {
+        if (MLClient.hand == null) return;
 
-            float px = MLClient.mainTransform.localScale.x * 10 * MLClient.hand.hg.right[8].x - MLClient.mainTransform.localScale.x * 5;
-            float py = MLClient.mainTransform.localScale.z * 10 * MLClient.hand.hg.right[8].y - MLClient.mainTransform.localScale.z * 5;
-            
-            Vector3 pos = new Vector3(px, py, transform.position.z);
-            transform.position = Offset + pos;
+        if (isDragging && lastObject == gameObject.GetInstanceID())
+        {
+            transform.position =  new Vector3(collPos.x, collPos.y, originalPos.z); 
+            //transform.position =  offset + new Vector3(collPos.x, collPos.y, originalPos.z); 
+        }
+
+        else if (isScaling)
+        {
+            float x1 = MLClient.hand.hg.left[8].x;
+            float y1 = MLClient.hand.hg.left[8].y;
+            float x2 = MLClient.hand.hg.right[8].x;
+            float y2 = MLClient.hand.hg.right[8].y;
+
+            currentScale = Vector2.Distance(new Vector2(x1, y1), new Vector2(x2, y2));
+            transform.localScale *= (currentScale - orignalDistance);
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        runOnce = true;
-
+        EndDrag();
     }
 
     private void EndDrag()
     {
-        OnEndDrag.Invoke();
-        Dragging = false;
+        isDragging = false;
+    }
+
+    private void EndScaling()
+    {
+        isScaling = false;
     }
 
     public void BeginDrag()
     {
-        OnBeginDrag.Invoke();
-        Dragging = true;
+        lastObject = gameObject.GetInstanceID();
 
-        if (MLClient.hand.hg.rightGesture.Length > 0)
-        {
-
-            float px = MLClient.mainTransform.localScale.x * 10 * MLClient.hand.hg.right[8].x - MLClient.mainTransform.localScale.x * 5;
-            float py = MLClient.mainTransform.localScale.z * 10 * MLClient.hand.hg.right[8].y - MLClient.mainTransform.localScale.z * 5;
-
-            Offset = transform.position - new Vector3(px, py, 0);
-
-        }
+        isDragging = true;
+        //offset = transform.position - new Vector3(collPos.x, collPos.y, originalPos.z);
     }
 }
