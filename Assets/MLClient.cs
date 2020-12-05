@@ -241,6 +241,9 @@ public class MLClient : MonoBehaviour
             leftPointer.SetActive(false);
             rightPointer.transform.position = transform.position + RightPointMapped(hand, 8) + ptrPos;
 
+
+
+
         }
     }
 
@@ -280,7 +283,13 @@ public class MLClient : MonoBehaviour
             leftPointer.SetActive(true);
             rightPointer.SetActive(false);
 
-            leftPointer.transform.position = transform.position + LeftPointMapped(hand, 8) + ptrPos; 
+            leftPointer.transform.position = transform.position + LeftPointMapped(hand, 8) + ptrPos;
+
+
+            var ints = Instantiate(rightPointer, leftPointer.transform.position, Quaternion.identity, content.transform.parent.transform);
+            ints.SetActive(true);
+
+            Destroy(ints, 2f);
 
         }
 
