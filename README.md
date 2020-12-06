@@ -1,5 +1,5 @@
 
-<h3 align="center">Virtual Board</h3>
+Virtual Board
 A virtual board controlled by hand gestures.
 
 
