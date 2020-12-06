@@ -1,5 +1,5 @@
 
-Virtual Board
+<h1>Virtual Board</h1>
 A virtual board controlled by hand gestures.
 
 
