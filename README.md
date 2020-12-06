@@ -1,6 +1,6 @@
 
 <h3 align="center">Virtual Board</h3>
-
+A virtual board controlled by hand gestures.
 
 
 ## 📝 Table of Contents
